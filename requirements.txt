@@ -1,0 +1,4 @@
+pip==22.3.1
+pyodbc==4.0.35
+setuptools==65.5.1
+wheel==0.38.3
