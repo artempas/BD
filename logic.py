@@ -142,3 +142,7 @@ class Database:
     def delete_entry(self,table_name:str, rec_id:int):
         self.cur.execute(f'DELETE FROM {table_name} WHERE id = ?', (rec_id,))
         self.con.commit()
+
+    def sum_of_ids(self, table_name):
+        self.cur.execute(f"SELECT COUNT(id) FROM {table_name}")
+        return self.cur.fetchall()

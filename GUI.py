@@ -4,7 +4,7 @@ import time
 from enum import Enum
 from tkinter import *
 from tkinter import ttk
-from tkinter.messagebox import showerror
+from tkinter.messagebox import showerror, showinfo
 
 import logic
 
@@ -52,9 +52,9 @@ class Root(Tk):
         self.table_labels = []
         self.logger.debug("Table popup initialized")
         self.new_btn = Button(command_frame, text="New", command=self.new_entry)
-        self.new_btn.grid(row=1, column=1, columnspan=2)
-        self.select_btn = Button(command_frame, text="Select", command=self.select_entry)
-        # self.select_btn.grid(row=1, column=2)
+        self.new_btn.grid(row=1, column=1)
+        self.count_btn = Button(command_frame, text="Number of records", command=self.show_sum)
+        self.count_btn.grid(row=1, column=2)
         self.save_btn = Button(command_frame, text="Save", command=self.save_entry)
         self.save_btn.grid(row=2, column=1)
         self.delete_btn = Button(command_frame, text="Delete", command=self.delete_entry)
@@ -110,13 +110,11 @@ class Root(Tk):
         if self.current_table == "sqlite_master":
             self.save_btn["state"] = "disabled"
             self.delete_btn["state"] = "disabled"
-            self.select_btn['state'] = 'disabled'
             self.new_btn['state'] = 'disabled'
         else:
             self.new_entry()
             self.save_btn["state"] = "normal"
             self.delete_btn["state"] = "normal"
-            self.select_btn['state'] = 'normal'
             self.new_btn['state'] = 'normal'
 
     def validate_input(self, char, new_val) -> bool:
@@ -139,8 +137,6 @@ class Root(Tk):
         self.new_btn.configure(relief="sunken")
         self.new_btn["state"] = "disabled"
         self.delete_btn["state"] = "disabled"
-        self.select_btn.configure(relief="raised")
-        self.select_btn["state"] = "normal"
 
     def save_entry(self):
         try:
@@ -188,8 +184,6 @@ class Root(Tk):
                 if disabled:
                     self.table_entries[i].config(state=DISABLED)
             self.mode = Command.SELECT
-            self.select_btn.configure(relief="sunken")
-            self.select_btn["state"] = "disabled"
             self.delete_btn["state"] = "normal"
             self.new_btn.configure(relief="raised")
             self.new_btn["state"] = "normal"
@@ -202,3 +196,10 @@ class Root(Tk):
     def toggled_focus(self, *args):
         if self.table.focus_get() != self and self.current_table!='sqlite_master':
             self.select_entry()
+
+    def show_sum(self):
+        try:
+            cnt=self.connection.sum_of_ids(self.current_table)[0][0]
+            showinfo('INFO', f"{cnt} records in {self.current_table}")
+        except Exception as exc:
+            showerror('ERROR', str(exc))
